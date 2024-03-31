@@ -29,7 +29,7 @@ namespace Realms
         public bool mWasAtCeiling;
         public bool mAtCeiling;
 
-        public void UpdatePhysics(GameTime gameTime)
+        public void UpdatePhysics(GameTime gameTime, int preferredBackBufferHeight)
         {
             mOldPosition = mPosition;
             mOldSpeed = mSpeed;
@@ -44,13 +44,13 @@ namespace Realms
             mPosition += mSpeed * deltaTime;
 
             //temporary ground detection
-            if (mPosition.Y < 0.0f)
-            {
-                mPosition.Y = 0.0f;
-                mOnGround = true;
-            }
-            else
-                mOnGround = false;
+            //if (mPosition.Y > preferredBackBufferHeight - 50)
+            //{
+            //    mPosition.Y = preferredBackBufferHeight - 50;
+            //    mOnGround = true;
+            //}
+            //else
+            //    mOnGround = false;
 
             mAABB.center = mPosition + mAABBOffset;
         }

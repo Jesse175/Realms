@@ -6,9 +6,10 @@ namespace Realms
 {
     public class Game1 : Game
     {
-
-
+        Player player;
         Texture2D ballTexture;
+        Texture2D groundTexture; // For a solid color ground
+        Rectangle groundRectangle;
         Vector2 ballPosition;
         float ballSpeed;
         private GraphicsDeviceManager _graphics;
@@ -24,8 +25,13 @@ namespace Realms
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
-            ballPosition = new Vector2(_graphics.PreferredBackBufferWidth / 2,
-                _graphics.PreferredBackBufferHeight / 2);
+            player = new Player(new Vector2(_graphics.PreferredBackBufferWidth / 2,
+                _graphics.PreferredBackBufferHeight / 2));
+            Texture2D ballTexture;
+
+
+            //ballPosition = new Vector2(_graphics.PreferredBackBufferWidth / 2,
+            //    _graphics.PreferredBackBufferHeight / 2);
             ballSpeed = 100f;
 
 
@@ -38,6 +44,14 @@ namespace Realms
 
             // TODO: use this.Content to load your game content here
             ballTexture = Content.Load<Texture2D>("ball");
+            player.Sprite = Content.Load<Texture2D>("player");
+
+            // Create a 1x1 white texture for drawing colored rectangles
+            groundTexture = new Texture2D(GraphicsDevice, 1, 1);
+            groundTexture.SetData(new Color[] { Color.White });
+
+            // Define the size of the ground rectangle
+            groundRectangle = new Rectangle(0, _graphics.PreferredBackBufferHeight - 50, _graphics.PreferredBackBufferWidth, 50); // Example size
         }
 
         protected override void Update(GameTime gameTime)
@@ -70,6 +84,7 @@ namespace Realms
 
             //bounds handling
 
+
             if (ballPosition.X > _graphics.PreferredBackBufferWidth - ballTexture.Width / 2)
             {
                 ballPosition.X = _graphics.PreferredBackBufferWidth - ballTexture.Width / 2;
@@ -90,6 +105,9 @@ namespace Realms
 
 
             base.Update(gameTime);
+            
+            player.UpdatePhysics(gameTime, _graphics.PreferredBackBufferHeight);
+            player.Update(_graphics.PreferredBackBufferHeight);
 
         }
 
@@ -99,8 +117,10 @@ namespace Realms
 
             // TODO: Add your drawing code here
             _spriteBatch.Begin();
-            _spriteBatch.Draw(ballTexture, ballPosition, null, Color.White, 0f, new Vector2(ballTexture.Width / 2, ballTexture.Height / 2), 
-                Vector2.One, SpriteEffects.None, 0f);
+            //_spriteBatch.Draw(ballTexture, ballPosition, null, Color.White, 0f, new Vector2(ballTexture.Width / 2, ballTexture.Height / 2), 
+            //    Vector2.One, SpriteEffects.None, 0f);
+            _spriteBatch.Draw(player.Sprite, player.mPosition, null, Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
+            _spriteBatch.Draw(groundTexture, groundRectangle, Color.Brown); // Draw the ground as a brown rectangle
             _spriteBatch.End();
 
             base.Draw(gameTime);
