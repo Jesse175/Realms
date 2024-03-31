@@ -7,6 +7,8 @@ namespace Realms
     public class Game1 : Game
     {
         Player player;
+        bool[] mInputs;
+        bool[] mPrevInputs;
         Texture2D ballTexture;
         Texture2D groundTexture; // For a solid color ground
         Rectangle groundRectangle;
@@ -25,9 +27,13 @@ namespace Realms
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
-            player = new Player(new Vector2(_graphics.PreferredBackBufferWidth / 2,
+            //player = new Player(new Vector2(_graphics.PreferredBackBufferWidth / 2,
+            //    _graphics.PreferredBackBufferHeight / 2));
+            mInputs = new bool[(int)KeyInput.Count];
+            mPrevInputs = new bool[(int)KeyInput.Count];
+            player = new Player(new Vector2(_graphics.PreferredBackBufferWidth / 2, _graphics.PreferredBackBufferHeight / 2));
+            player.CharacterInit(mInputs, mPrevInputs, new Vector2(_graphics.PreferredBackBufferWidth / 2,
                 _graphics.PreferredBackBufferHeight / 2));
-            Texture2D ballTexture;
 
 
             //ballPosition = new Vector2(_graphics.PreferredBackBufferWidth / 2,
@@ -62,52 +68,57 @@ namespace Realms
             // TODO: Add your update logic here
             var kstate = Keyboard.GetState();
 
-            if (kstate.IsKeyDown(Keys.Up))
-            {
-                ballPosition.Y -= ballSpeed * (float)gameTime.ElapsedGameTime.TotalSeconds;
-            }
+            // Update your input states
+            mInputs[(int)KeyInput.GoRight] = kstate.IsKeyDown(Keys.Right);
+            mInputs[(int)KeyInput.GoLeft] = kstate.IsKeyDown(Keys.Left);
+            mInputs[(int)KeyInput.GoDown] = kstate.IsKeyDown(Keys.Down);
+            mInputs[(int)KeyInput.Jump] = kstate.IsKeyDown(Keys.Space); // Assuming 'Space' is the jump key
 
-            if (kstate.IsKeyDown(Keys.Down))
-            {
-                ballPosition.Y += ballSpeed * (float)gameTime.ElapsedGameTime.TotalSeconds;
-            }
-
-            if (kstate.IsKeyDown(Keys.Left))
-            {
-                ballPosition.X -= ballSpeed * (float)gameTime.ElapsedGameTime.TotalSeconds;
-            }
-
-            if (kstate.IsKeyDown(Keys.Right))
-            {
-                ballPosition.X += ballSpeed * (float)gameTime.ElapsedGameTime.TotalSeconds;
-            }
-
-            //bounds handling
-
-
-            if (ballPosition.X > _graphics.PreferredBackBufferWidth - ballTexture.Width / 2)
-            {
-                ballPosition.X = _graphics.PreferredBackBufferWidth - ballTexture.Width / 2;
-            }
-            else if (ballPosition.X < ballTexture.Width / 2)
-            {
-                ballPosition.X = ballTexture.Width / 2;
-            }
-
-            if (ballPosition.Y > _graphics.PreferredBackBufferHeight - ballTexture.Height / 2)
-            {
-                ballPosition.Y = _graphics.PreferredBackBufferHeight - ballTexture.Height / 2;
-            }
-            else if (ballPosition.Y < ballTexture.Height / 2)
-            {
-                ballPosition.Y = ballTexture.Height / 2;
-            }
-
+            player.CharacterUpdate(gameTime);
 
             base.Update(gameTime);
-            
+
             player.UpdatePhysics(gameTime, _graphics.PreferredBackBufferHeight);
             player.Update(_graphics.PreferredBackBufferHeight);
+
+            //if (kstate.IsKeyDown(Keys.Up))
+            //{
+            //    ballPosition.Y -= ballSpeed * (float)gameTime.ElapsedGameTime.TotalSeconds;
+            //}
+
+            //if (kstate.IsKeyDown(Keys.Down))
+            //{
+            //    ballPosition.Y += ballSpeed * (float)gameTime.ElapsedGameTime.TotalSeconds;
+            //}
+
+            //if (kstate.IsKeyDown(Keys.Left))
+            //{
+            //    ballPosition.X -= ballSpeed * (float)gameTime.ElapsedGameTime.TotalSeconds;
+            //}
+
+            //if (kstate.IsKeyDown(Keys.Right))
+            //{
+            //    ballPosition.X += ballSpeed * (float)gameTime.ElapsedGameTime.TotalSeconds;
+            //}
+
+            //bounds handling
+            //if (ballPosition.X > _graphics.PreferredBackBufferWidth - ballTexture.Width / 2)
+            //{
+            //    ballPosition.X = _graphics.PreferredBackBufferWidth - ballTexture.Width / 2;
+            //}
+            //else if (ballPosition.X < ballTexture.Width / 2)
+            //{
+            //    ballPosition.X = ballTexture.Width / 2;
+            //}
+
+            //if (ballPosition.Y > _graphics.PreferredBackBufferHeight - ballTexture.Height / 2)
+            //{
+            //    ballPosition.Y = _graphics.PreferredBackBufferHeight - ballTexture.Height / 2;
+            //}
+            //else if (ballPosition.Y < ballTexture.Height / 2)
+            //{
+            //    ballPosition.Y = ballTexture.Height / 2;
+            //}
 
         }
 
