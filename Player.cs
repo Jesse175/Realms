@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,7 +14,7 @@ namespace Realms
     internal class Player : Actor
     {
         public const float cWalkSpeed = 160.0f;
-        public const float cJumpSpeed = 410.0f;
+        public const float cJumpSpeed = 110.0f;
         public const float cMinJumpSpeed = 200.0f;
         public const float cHalfSizeY = 20.0f;
         public const float cHalfSizeX = 6.0f;
@@ -75,7 +76,7 @@ namespace Realms
             //    mSpeed.Y = speed; // Move down (if applicable)
 
             //ground collision handling
-            if (mPosition.Y > preferredBackBufferHeight - Sprite.Height - 50)
+            if (mPosition.Y >= preferredBackBufferHeight - Sprite.Height - 50)
             {
                 mPosition.Y = preferredBackBufferHeight - Sprite.Height - 50;
                 mOnGround = true;
@@ -85,11 +86,13 @@ namespace Realms
 
         }
 
+        int debugCounter = 0;
         public void CharacterUpdate(GameTime gameTime)
         {
             switch (mCurrentState)
             {
                 case CharacterState.Stand:
+                    Debug.WriteLine("STANDING " + debugCounter++ + " On Ground: " + mOnGround);
                     mSpeed = Vector2.Zero;
                     //mAnimator.Play("Stand");
 
@@ -108,13 +111,15 @@ namespace Realms
                     }
                     else if (KeyState(KeyInput.Jump))
                     {
-                        mSpeed.Y = mJumpSpeed;
+                        Debug.WriteLine("JUMP input detected " + debugCounter++);
+                        mSpeed.Y -= mJumpSpeed;
                         mCurrentState = CharacterState.Jump;
                         break;
                     }
                     break;
 
                 case CharacterState.Walk:
+                    Debug.WriteLine("WALKING " + debugCounter++ );
                     //mAnimator.Play("Walk");
                     if (KeyState(KeyInput.GoRight) == KeyState(KeyInput.GoLeft))
                     {
@@ -143,7 +148,8 @@ namespace Realms
                     //yump
                     if (KeyState(KeyInput.Jump))
                     {
-                        mSpeed.Y = mJumpSpeed;
+                        Debug.WriteLine("JUMPING (walk switch) " + debugCounter++);
+                        mSpeed.Y -= mJumpSpeed;
                         //mAudioSource.PlayOneShot(mJumpSfx, 1.0f);
                         mCurrentState = CharacterState.Jump;
                         break;
@@ -156,10 +162,12 @@ namespace Realms
                     break;
 
                 case CharacterState.Jump:
+                    Debug.WriteLine("IN JUMP STATE " + debugCounter++);
                     //mAnimator.Play("Jump");
                     mSpeed.Y += 9.8F * (float)gameTime.ElapsedGameTime.TotalSeconds; //hardcoded gravity 9.8F
-                    mSpeed.Y = Math.Max(mSpeed.Y, 20F);
+                    //mSpeed.Y = Math.Max(mSpeed.Y, 20F);
 
+                    //if jump button is not held
                     if (!KeyState(KeyInput.Jump) && mSpeed.Y > 0.0f)
                     {
                         mSpeed.Y = Math.Min(mSpeed.Y, 200.0f);
@@ -211,10 +219,10 @@ namespace Realms
 
             //UpdatePhysics();
 
-            if ((!mWasOnGround && mOnGround)
-            || (!mWasAtCeiling && mAtCeiling)
-            || (!mPushedLeftWall && mPushesLeftWall)
-            || (!mPushedRightWall && mPushesRightWall))
+            //if ((!mWasOnGround && mOnGround)
+            //|| (!mWasAtCeiling && mAtCeiling)
+            //|| (!mPushedLeftWall && mPushesLeftWall)
+            //|| (!mPushedRightWall && mPushesRightWall))
                 //mAudioSource.PlayOneShot(mHitWallSfx, 0.5f);
 
             UpdatePrevInputs();

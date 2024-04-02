@@ -59,7 +59,6 @@ namespace Realms
             // Define the size of the ground rectangle
             groundRectangle = new Rectangle(0, _graphics.PreferredBackBufferHeight - 50, _graphics.PreferredBackBufferWidth, 50); // Example size
         }
-
         protected override void Update(GameTime gameTime)
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
