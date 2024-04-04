@@ -164,7 +164,7 @@ namespace Realms
                 case CharacterState.Jump:
                     Debug.WriteLine("IN JUMP STATE " + debugCounter++);
                     //mAnimator.Play("Jump");
-                    mSpeed.Y += 9.8F * (float)gameTime.ElapsedGameTime.TotalSeconds; //hardcoded gravity 9.8F
+                    mSpeed.Y += 350.8F * (float)gameTime.ElapsedGameTime.TotalSeconds; //hardcoded gravity 9.8F
                     //mSpeed.Y = Math.Max(mSpeed.Y, 20F);
 
                     //if jump button is not held
