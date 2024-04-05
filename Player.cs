@@ -27,28 +27,13 @@ namespace Realms
         private int speed = 200;
 
         public CharacterState mCurrentState = CharacterState.Stand;
+        public bool gravity;
         public float mJumpSpeed;
         public float mWalkSpeed;
-        public double timer;
+        public double jumpTime;
         public Player(Vector2 initialPosition)
         {
             mPosition = initialPosition;
-        }
-
-        private void Jump(GameTime gameTime)
-        {
-            if(timer <= 0)
-            {
-                //refresh jump timer
-                timer = 5000;
-                mSpeed.Y = -100;
-            }
-            //if jump button is not held
-            //if (!KeyState(KeyInput.Jump) && mSpeed.Y < 0.0f)
-            //{
-             //   Debug.WriteLine("Jump no longer held.");
-             //   mSpeed.Y = Math.Max(mSpeed.Y, 50.0f);
-            //}
         }
 
         public void CharacterInit(bool[] inputs, bool[] prevInputs, Vector2 initialPosition)
@@ -81,17 +66,6 @@ namespace Realms
 
         public void Update(int preferredBackBufferHeight)
         {
-            //KeyboardState state = Keyboard.GetState();
-            //mSpeed = Vector2.Zero; // Reset speed each frame
-
-            //if (state.IsKeyDown(Keys.Left) || state.IsKeyDown(Keys.A))
-            //    mSpeed.X = -speed; // Move left
-            //if (state.IsKeyDown(Keys.Right) || state.IsKeyDown(Keys.D))
-            //    mSpeed.X = speed; // Move right
-            //if (state.IsKeyDown(Keys.Up) || state.IsKeyDown(Keys.W))
-            //    mSpeed.Y = -speed; // Move up (if applicable, like in a jump)
-            //if (state.IsKeyDown(Keys.Down) || state.IsKeyDown(Keys.S) && !mOnGround)
-            //    mSpeed.Y = speed; // Move down (if applicable)
 
             //ground collision handling
             if (mPosition.Y >= preferredBackBufferHeight - Sprite.Height - 50)
@@ -104,20 +78,28 @@ namespace Realms
 
         }
 
+        private void Jump()
+        {
+            mSpeed.Y = cJumpSpeed;
+            if(jumpTime > 0)
+            {
+                gravity = false;
+            }
+            
+        }
+
         int debugCounter = 0;
         public void CharacterUpdate(GameTime gameTime)
         {
             switch (mCurrentState)
             {
                 case CharacterState.Stand:
-                    Debug.WriteLine("STANDING " + debugCounter++ + " On Ground: " + mOnGround);
                     mSpeed = Vector2.Zero;
-                    //mAnimator.Play("Stand");
 
-                    //jumping
+                    //in air
                     if (!mOnGround)
                     {
-                        mCurrentState = CharacterState.Jump;
+                        mCurrentState = CharacterState.InAir;
                         break;
                     }
 
@@ -129,15 +111,13 @@ namespace Realms
                     }
                     else if (Pressed(KeyInput.Jump))
                     {
-                        Debug.WriteLine("JUMP input detected " + debugCounter++);
-                        Jump(gameTime);
-                        mCurrentState = CharacterState.Jump;
+                        Jump();
+                        mCurrentState = CharacterState.InAir;
                         break;
                     }
                     break;
 
                 case CharacterState.Walk:
-                    Debug.WriteLine("WALKING " + debugCounter++ );
                     //mAnimator.Play("Walk");
                     if (KeyState(KeyInput.GoRight) == KeyState(KeyInput.GoLeft))
                     {
@@ -166,24 +146,24 @@ namespace Realms
                     //yump
                     if (KeyState(KeyInput.Jump))
                     {
-                        Debug.WriteLine("JUMPING (walk switch) " + debugCounter++);
                         mSpeed.Y -= mJumpSpeed;
-                        //mAudioSource.PlayOneShot(mJumpSfx, 1.0f);
-                        mCurrentState = CharacterState.Jump;
+                        mCurrentState = CharacterState.InAir;
                         break;
                     }
                     else if (!mOnGround)
                     {
-                        mCurrentState = CharacterState.Jump;
+                        mCurrentState = CharacterState.InAir;
                         break;
                     }
                     break;
 
-                case CharacterState.Jump:
-                    //Debug.WriteLine("IN JUMP STATE " + debugCounter++);
-                    //mAnimator.Play("Jump");
-                    mSpeed.Y += 300.8F * (float)gameTime.ElapsedGameTime.TotalSeconds; //hardcoded gravity 9.8F
-                    //mSpeed.Y = Math.Max(mSpeed.Y, 20F);
+                case CharacterState.InAir:
+                    //is there a way to check how character ended up in the air? was space pressed?
+
+                    if (gravity)
+                    {
+                        mSpeed.Y += 300.8F * (float)gameTime.ElapsedGameTime.TotalSeconds;
+                    }
                     
 
                     if (KeyState(KeyInput.GoRight) == KeyState(KeyInput.GoLeft))
@@ -230,17 +210,7 @@ namespace Realms
                     break;
             }
 
-            //jump handling
-            if(timer > 0)
-            {
-                timer -= gameTime.ElapsedGameTime.TotalMilliseconds;
-                if (timer <= 0)
-                {
-                    mSpeed.Y += 20; // Adjust speed after jump
-                                    // Reset jump conditions or handle landing logic here
-                }
-            }
-
+            Debug.WriteLine(mCurrentState + " " + debugCounter++);
             //UpdatePhysics();
 
             //if ((!mWasOnGround && mOnGround)

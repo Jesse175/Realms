@@ -10,7 +10,7 @@ namespace Realms
     {
         Stand,
         Walk,
-        Jump,
+        InAir,
         GrabLedge,
     }
 }
