@@ -22,6 +22,8 @@ namespace Realms
         protected bool[] mInputs;
         protected bool[] mPrevInputs;
 
+        private bool isJumpBuffered;
+
         public Texture2D Sprite;
         private int speed = 200;
 
@@ -41,6 +43,8 @@ namespace Realms
 
             mInputs = inputs;
             mPrevInputs = prevInputs;
+
+            isJumpBuffered = false;
 
             mJumpSpeed = cJumpSpeed;
             mWalkSpeed = cWalkSpeed;
@@ -109,7 +113,7 @@ namespace Realms
                         mCurrentState = CharacterState.Walk;
                         break;
                     }
-                    else if (KeyState(KeyInput.Jump))
+                    else if (Pressed(KeyInput.Jump))
                     {
                         Debug.WriteLine("JUMP input detected " + debugCounter++);
                         mSpeed.Y -= mJumpSpeed;
@@ -164,7 +168,7 @@ namespace Realms
                 case CharacterState.Jump:
                     Debug.WriteLine("IN JUMP STATE " + debugCounter++);
                     //mAnimator.Play("Jump");
-                    mSpeed.Y += 9.8F * (float)gameTime.ElapsedGameTime.TotalSeconds; //hardcoded gravity 9.8F
+                    mSpeed.Y += 300.8F * (float)gameTime.ElapsedGameTime.TotalSeconds; //hardcoded gravity 9.8F
                     //mSpeed.Y = Math.Max(mSpeed.Y, 20F);
 
                     //if jump button is not held
