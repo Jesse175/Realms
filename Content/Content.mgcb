@@ -37,6 +37,13 @@
 /processorParam:TextureFormat=Color
 /build:Black-Square-PNG-Image.png
 
+#begin Jump Timer.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:Jump Timer.spritefont
+
 #begin player.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -60,4 +67,11 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:Tileset.png
+
+#begin Y Velocity.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:Y Velocity.spritefont;yVelocity.spritefont
 

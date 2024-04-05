@@ -17,6 +17,9 @@ namespace Realms
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
 
+        private SpriteFont yVelocity;
+        public SpriteFont jumpTimer;
+
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
@@ -51,6 +54,8 @@ namespace Realms
             // TODO: use this.Content to load your game content here
             ballTexture = Content.Load<Texture2D>("ball");
             player.Sprite = Content.Load<Texture2D>("player");
+            yVelocity = Content.Load<SpriteFont>("yVelocity");
+            jumpTimer = Content.Load<SpriteFont>("Jump Timer");
 
             // Create a 1x1 white texture for drawing colored rectangles
             groundTexture = new Texture2D(GraphicsDevice, 1, 1);
@@ -129,6 +134,8 @@ namespace Realms
             _spriteBatch.Begin();
             //_spriteBatch.Draw(ballTexture, ballPosition, null, Color.White, 0f, new Vector2(ballTexture.Width / 2, ballTexture.Height / 2), 
             //    Vector2.One, SpriteEffects.None, 0f);
+            _spriteBatch.DrawString(yVelocity, "yVelocity: " + player.mSpeed.Y, new Vector2(100, 100), Color.Black);
+            _spriteBatch.DrawString(jumpTimer, "Jump Timer: " + player.timer, new Vector2(100, 200), Color.Black);
             _spriteBatch.Draw(player.Sprite, player.mPosition, null, Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
             _spriteBatch.Draw(groundTexture, groundRectangle, Color.Brown); // Draw the ground as a brown rectangle
             _spriteBatch.End();

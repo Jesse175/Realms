@@ -18,11 +18,10 @@ namespace Realms
         public const float cMinJumpSpeed = 200.0f;
         public const float cHalfSizeY = 20.0f;
         public const float cHalfSizeX = 6.0f;
+        public const float cTerminalJumpSpeed = 300f;
 
         protected bool[] mInputs;
         protected bool[] mPrevInputs;
-
-        private bool isJumpBuffered;
 
         public Texture2D Sprite;
         private int speed = 200;
@@ -30,9 +29,26 @@ namespace Realms
         public CharacterState mCurrentState = CharacterState.Stand;
         public float mJumpSpeed;
         public float mWalkSpeed;
+        public double timer;
         public Player(Vector2 initialPosition)
         {
             mPosition = initialPosition;
+        }
+
+        private void Jump(GameTime gameTime)
+        {
+            if(timer <= 0)
+            {
+                //refresh jump timer
+                timer = 5000;
+                mSpeed.Y = -100;
+            }
+            //if jump button is not held
+            //if (!KeyState(KeyInput.Jump) && mSpeed.Y < 0.0f)
+            //{
+             //   Debug.WriteLine("Jump no longer held.");
+             //   mSpeed.Y = Math.Max(mSpeed.Y, 50.0f);
+            //}
         }
 
         public void CharacterInit(bool[] inputs, bool[] prevInputs, Vector2 initialPosition)
@@ -43,8 +59,6 @@ namespace Realms
 
             mInputs = inputs;
             mPrevInputs = prevInputs;
-
-            isJumpBuffered = false;
 
             mJumpSpeed = cJumpSpeed;
             mWalkSpeed = cWalkSpeed;
@@ -116,7 +130,7 @@ namespace Realms
                     else if (Pressed(KeyInput.Jump))
                     {
                         Debug.WriteLine("JUMP input detected " + debugCounter++);
-                        mSpeed.Y -= mJumpSpeed;
+                        Jump(gameTime);
                         mCurrentState = CharacterState.Jump;
                         break;
                     }
@@ -166,16 +180,11 @@ namespace Realms
                     break;
 
                 case CharacterState.Jump:
-                    Debug.WriteLine("IN JUMP STATE " + debugCounter++);
+                    //Debug.WriteLine("IN JUMP STATE " + debugCounter++);
                     //mAnimator.Play("Jump");
                     mSpeed.Y += 300.8F * (float)gameTime.ElapsedGameTime.TotalSeconds; //hardcoded gravity 9.8F
                     //mSpeed.Y = Math.Max(mSpeed.Y, 20F);
-
-                    //if jump button is not held
-                    if (!KeyState(KeyInput.Jump) && mSpeed.Y > 0.0f)
-                    {
-                        mSpeed.Y = Math.Min(mSpeed.Y, 200.0f);
-                    }
+                    
 
                     if (KeyState(KeyInput.GoRight) == KeyState(KeyInput.GoLeft))
                     {
@@ -219,6 +228,17 @@ namespace Realms
 
                 case CharacterState.GrabLedge:
                     break;
+            }
+
+            //jump handling
+            if(timer > 0)
+            {
+                timer -= gameTime.ElapsedGameTime.TotalMilliseconds;
+                if (timer <= 0)
+                {
+                    mSpeed.Y += 20; // Adjust speed after jump
+                                    // Reset jump conditions or handle landing logic here
+                }
             }
 
             //UpdatePhysics();
