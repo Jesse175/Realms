@@ -98,7 +98,7 @@ namespace Realms
             //_spriteBatch.Draw(ballTexture, ballPosition, null, Color.White, 0f, new Vector2(ballTexture.Width / 2, ballTexture.Height / 2), 
             //    Vector2.One, SpriteEffects.None, 0f);
             _spriteBatch.DrawString(yVelocity, "yVelocity: " + player.mSpeed.Y, new Vector2(100, 100), Color.Black);
-            _spriteBatch.DrawString(jumpTimer, "Jump Timer: " + player.timer, new Vector2(100, 200), Color.Black);
+            _spriteBatch.DrawString(jumpTimer, "Jump Timer: " + player.jumpTime, new Vector2(100, 200), Color.Black);
             _spriteBatch.Draw(player.Sprite, player.mPosition, null, Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
             _spriteBatch.Draw(groundTexture, groundRectangle, Color.Brown); // Draw the ground as a brown rectangle
             _spriteBatch.End();

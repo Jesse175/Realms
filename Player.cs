@@ -19,6 +19,7 @@ namespace Realms
         public const float cHalfSizeY = 20.0f;
         public const float cHalfSizeX = 6.0f;
         public const float cTerminalJumpSpeed = 300f;
+        public const float cTerminalFallSpeed = 300f;
 
         protected bool[] mInputs;
         protected bool[] mPrevInputs;
@@ -49,6 +50,10 @@ namespace Realms
             mWalkSpeed = cWalkSpeed;
 
             mScale = Vector2.One;
+
+            jumpTime = 0;
+
+            gravity = true;
         }
 
         protected bool Released(KeyInput key)
@@ -76,16 +81,21 @@ namespace Realms
             else
                 mOnGround = false;
 
+
         }
 
         private void Jump()
         {
-            mSpeed.Y = cJumpSpeed;
-            if(jumpTime > 0)
+            //only handles upwards momentum since there is onGround checking
+            if (mOnGround)
             {
-                gravity = false;
+                jumpTime = 500;
+                mSpeed.Y = -cJumpSpeed;
+                if (jumpTime > 0)
+                {
+                    gravity = false;
+                }
             }
-            
         }
 
         int debugCounter = 0;
@@ -163,6 +173,7 @@ namespace Realms
                     if (gravity)
                     {
                         mSpeed.Y += 300.8F * (float)gameTime.ElapsedGameTime.TotalSeconds;
+                        mSpeed.Y = Math.Min(mSpeed.Y, cTerminalFallSpeed);
                     }
                     
 
@@ -211,6 +222,25 @@ namespace Realms
             }
 
             Debug.WriteLine(mCurrentState + " " + debugCounter++);
+            Debug.WriteLine("Current Y Velocity: " + mSpeed.Y + " " + debugCounter++);
+            Debug.WriteLine("Jump Time: " + jumpTime + " " + debugCounter++);
+            Debug.WriteLine("Jump Time: " + jumpTime + " " + debugCounter++);
+            Debug.WriteLine("Gravity: " + gravity + " " + debugCounter++);
+            //jump timer decrement
+            if (jumpTime > 0)
+            {
+                jumpTime -= gameTime.ElapsedGameTime.TotalMilliseconds;
+            }
+            if (jumpTime <= 0)
+            {
+                gravity = true;
+            }
+            if(Released(KeyInput.Jump))
+            {
+                jumpTime = 0;
+            }
+            
+
             //UpdatePhysics();
 
             //if ((!mWasOnGround && mOnGround)
