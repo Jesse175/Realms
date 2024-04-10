@@ -19,19 +19,21 @@ namespace Realms
         public const float cHalfSizeY = 20.0f;
         public const float cHalfSizeX = 6.0f;
         public const float cTerminalJumpSpeed = 300f;
-        public const float cTerminalFallSpeed = 300f;
+        public const float cTerminalFallSpeed = 110f;
+        public const double cBufferTime = 150;
+        public const float cGravity = 1000f;
 
         protected bool[] mInputs;
         protected bool[] mPrevInputs;
 
         public Texture2D Sprite;
-        private int speed = 200;
 
         public CharacterState mCurrentState = CharacterState.Stand;
         public bool gravity;
         public float mJumpSpeed;
         public float mWalkSpeed;
         public double jumpTime;
+        public double jumpBufferTime;
         public Player(Vector2 initialPosition)
         {
             mPosition = initialPosition;
@@ -89,12 +91,18 @@ namespace Realms
             //only handles upwards momentum since there is onGround checking
             if (mOnGround)
             {
+                mCurrentState = CharacterState.InAir;
                 jumpTime = 500;
                 mSpeed.Y = -cJumpSpeed;
                 if (jumpTime > 0)
                 {
                     gravity = false;
                 }
+            }
+            else //buffering jump
+            {
+                //refreshing jump timer
+                jumpBufferTime = cBufferTime;
             }
         }
 
@@ -122,7 +130,6 @@ namespace Realms
                     else if (Pressed(KeyInput.Jump))
                     {
                         Jump();
-                        mCurrentState = CharacterState.InAir;
                         break;
                     }
                     break;
@@ -154,10 +161,9 @@ namespace Realms
                     }
 
                     //yump
-                    if (KeyState(KeyInput.Jump))
+                    if (Pressed(KeyInput.Jump))
                     {
-                        mSpeed.Y -= mJumpSpeed;
-                        mCurrentState = CharacterState.InAir;
+                        Jump();
                         break;
                     }
                     else if (!mOnGround)
@@ -172,7 +178,7 @@ namespace Realms
 
                     if (gravity)
                     {
-                        mSpeed.Y += 300.8F * (float)gameTime.ElapsedGameTime.TotalSeconds;
+                        mSpeed.Y += cGravity * (float)gameTime.ElapsedGameTime.TotalSeconds;
                         mSpeed.Y = Math.Min(mSpeed.Y, cTerminalFallSpeed);
                     }
                     
@@ -196,6 +202,12 @@ namespace Realms
                         else
                             mSpeed.X = -mWalkSpeed;
                         mScale.X = -Math.Abs(mScale.X);
+                    }
+
+                    //if jump is pressed while still in the air, buffer the input for some time
+                    if (Pressed(KeyInput.Jump))
+                    {
+                        Jump();
                     }
                     
                     //if we hit the ground 
@@ -239,7 +251,17 @@ namespace Realms
             {
                 jumpTime = 0;
             }
-            
+
+            if (jumpBufferTime > 0)
+            {
+                jumpBufferTime -= gameTime.ElapsedGameTime.TotalMilliseconds;
+            }
+
+            //jump buffer handling
+            if (mOnGround && jumpBufferTime > 0)
+            {
+                Jump();
+            }
 
             //UpdatePhysics();
 
@@ -247,7 +269,7 @@ namespace Realms
             //|| (!mWasAtCeiling && mAtCeiling)
             //|| (!mPushedLeftWall && mPushesLeftWall)
             //|| (!mPushedRightWall && mPushesRightWall))
-                //mAudioSource.PlayOneShot(mHitWallSfx, 0.5f);
+            //mAudioSource.PlayOneShot(mHitWallSfx, 0.5f);
 
             UpdatePrevInputs();
         }
